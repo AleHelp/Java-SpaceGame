@@ -1,0 +1,103 @@
+package pacchettoGioco;
+
+import javafx.scene.Group;
+import javafx.scene.image.ImageView;
+
+public class Nave {
+	private ImageView nave[] = new ImageView[2];
+	private Group gNave;
+	private int i = 0;
+
+	public Nave(Group gNave) {
+		for (int i = 0; i < nave.length; i++) {
+			nave[i] = new ImageView("pacchettoGioco/" + (i + 1) + ".png");
+			gNave.getChildren().add(nave[i]);
+			nave[i].setVisible(false);
+		}
+		this.gNave = gNave;
+		nave[0].setVisible(true);
+	}
+
+	public Nave(Group gNave, double posizioneX, double posizioneY) {
+		this(gNave);
+		for (int i = 0; i < nave.length; i++) {
+			nave[i].setTranslateX(posizioneX);
+			nave[i].setTranslateY(posizioneY);
+		}
+
+	}
+	//Getter che prende le due immagini in movimento ripetute nei metodi
+	public int getI() {
+		return i;
+	}
+    //Getter che ci fornisce l'immagine stessa nel vettore
+	public ImageView[] getNave() {
+		return nave;
+	}
+	//metodo che permett alla nave di non uscie dallo schermo.
+	public void setLimite() {
+		for (int i = 0; i < nave.length; i++) {
+			if (nave[i].getTranslateY() < 0) {
+				nave[i].setTranslateY(0);
+
+			} else if (nave[i].getTranslateY() > 460) {
+				nave[i].setTranslateY(460);
+
+			}
+			if (nave[i].getTranslateX() > 700) {
+				nave[i].setTranslateX(700);
+
+			} else if (nave[i].getTranslateX() < 0) {
+				nave[i].setTranslateX(0);
+			}
+		}
+	}
+
+	public void Elimina() {
+		for (int i = 0; i < nave.length; i++) {
+			gNave.getChildren().remove(nave[i]);
+		}
+	}
+	/* metodo che permette il movimento verso l'alto e verso il basso.*/
+	public void suGiu(int movY) {
+		if (movY != 0) {
+			nave[i].setVisible(false);
+			i++;
+			if (i == 2) {
+				i = 0;
+			}
+			nave[i].setVisible(true);
+		}
+		if (movY > 0) {
+			for (int j = 0; j < nave.length; j++) {
+				nave[j].setTranslateY(nave[j].getTranslateY() - 15);
+			}
+
+		} else if (movY < 0) {
+			for (int j = 0; j < nave.length; j++) {
+				nave[j].setTranslateY(nave[j].getTranslateY() + 15);
+			}
+		}
+
+	}
+	/*metodo che permette il movimento in avanti e dietro*/
+	public void avantiDietro(int movX) {
+		if (movX != 0) {
+			nave[i].setVisible(false);
+			i++;
+			if (i == 2) {
+				i = 0;
+			}
+			nave[i].setVisible(true);
+		}
+		if (movX > 0) {
+			for (int j = 0; j < nave.length; j++) {
+				nave[j].setTranslateX(nave[j].getTranslateX() + 15);
+			}
+		} else if (movX < 0) {
+			for (int j = 0; j < nave.length; j++) {
+				nave[j].setTranslateX(nave[j].getTranslateX() - 15);
+			}
+		}
+	}
+}
