@@ -1,0 +1,55 @@
+#Titolo {
+	-fx-font-family: verdana;
+	-fx-text-fill: red;
+	-fx-font-size: 45;
+	-fx-font-Style: italic, bold;
+	-fx-font-weight: bold;
+}
+
+#Avanti {
+	-fx-font-family: verdana;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-background-color: black;
+	-fx-border-width: 6;
+}
+
+#Start {
+	-fx-font-family: verdana;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-background-color: black;
+	-fx-border-width: 6;
+}
+
+#Spiegazione {
+	-fx-font-family: verdana;
+	-fx-font-Style: italic, bold;
+	-fx-text-fill: yellow;
+	-fx-font-size: 18;
+	-fx-font-weight: bold;
+}
+
+#Comandi {
+	-fx-font-family: verdana;
+	-fx-font-Style: italic, bold;
+	-fx-text-fill: white;
+	-fx-font-size: 17;
+	-fx-font-weight: bold;
+}
+
+#Punteggio {
+	-fx-font-family: verdana;
+	-fx-font-Style: italic, bold;
+	-fx-text-fill: Red;
+	-fx-font-size: 15;
+	-fx-font-weight: bold;
+}
+
+#Fine {
+	-fx-font-family: verdana;
+	-fx-font-Style: italic, bold;
+	-fx-text-fill: Red;
+	-fx-font-size: 20;
+	-fx-font-weight: bold;
+}
