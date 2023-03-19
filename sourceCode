@@ -1,0 +1,262 @@
+package pacchettoGioco;
+
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+
+public class GiocoAlessandroEleuteri extends Application {
+	Group principale = new Group();
+	ImageView iSfondo = new ImageView("pacchettoGioco/SfondoSpazio.jpg");
+	ImageView iSfondoScorri = new ImageView("pacchettoGioco/SfondoSpazio2.jpg");
+	ImageView iSfondoFinale = new ImageView("pacchettoGioco/SfondoSpazio.jpg");
+	ImageView cristallo1, cristallo2, cristallo3;
+	Button bAvanti, bStart, bRigioca;
+	Label lTitolo, lInfo, spiegazione, lPunteggio, lFine;
+	AnimationTimer tempo;
+	Nave navicella;
+	int limite = 3, contatore = 0, contaPunteggio = 0;
+
+	public void start(Stage finestra) {
+		Scene scena = new Scene(principale, 900, 600);
+		finestra.setTitle("Galaxy War");
+		principale.getChildren().add(iSfondo);
+		principale.getChildren().add(iSfondoScorri);
+		iSfondo.setTranslateX(0);
+		iSfondo.setTranslateY(0);
+		iSfondoScorri.setTranslateX(915);
+		iSfondoScorri.setTranslateY(0);
+
+		lTitolo = new Label(" Galaxy War ");
+		principale.getChildren().add(lTitolo);
+		lTitolo.setTranslateX(300);
+		lTitolo.setTranslateY(110);
+		lTitolo.setId("Titolo");
+		lTitolo.getStyleClass().add("pacchettoGioco");
+
+		bAvanti = new Button(" AVANTI ");
+		principale.getChildren().add(bAvanti);
+		bAvanti.setTranslateX(380);
+		bAvanti.setTranslateY(220);
+		bAvanti.setMinSize(150, 70);
+		bAvanti.setOnAction(e -> vaiSpiegazione());
+		bAvanti.setId("Avanti");
+		bAvanti.getStyleClass().add("pacchettoGioco");
+
+		bStart = new Button(" START ");
+		principale.getChildren().add(bStart);
+		bStart.setTranslateX(380);
+		bStart.setTranslateY(420);
+		bStart.setMinSize(150, 70);
+		bStart.setOnAction(e -> iniziaGioco());
+		bStart.setVisible(false);
+		bStart.setId("Start");
+		bStart.getStyleClass().add("pacchettoGioco");
+
+		cristallo1 = new ImageView("pacchettoGioco/kyberBlu.png");
+		principale.getChildren().add(cristallo1);
+		cristallo1.setTranslateX(800);
+		cristallo1.setTranslateY(120);
+		cristallo1.setRotate(60);
+		cristallo1.setVisible(false);
+
+		cristallo2 = new ImageView("pacchettoGioco/kyberVerde.png");
+		principale.getChildren().add(cristallo2);
+		cristallo2.setTranslateX(800);
+		cristallo2.setTranslateY(270);
+		cristallo2.setRotate(100);
+		cristallo2.setVisible(false);
+
+		cristallo3 = new ImageView("pacchettoGioco/kyberRosso.png");
+		principale.getChildren().add(cristallo3);
+		cristallo3.setTranslateX(800);
+		cristallo3.setTranslateY(450);
+		cristallo3.setRotate(220);
+		cristallo3.setVisible(false);
+
+		scena.getStylesheets().add("PacchettoGioco/stilePrincipale.css");
+		tempo = new AnimationTimer() {
+
+			@Override
+			public void handle(long arg0) {
+				scorriSfondo();
+				navicella.setLimite();
+				creaCristalli();
+				muoviCristalli();
+				collisione();
+				finale();
+			}
+		};
+		scena.setOnKeyPressed(e -> spostaNaveColpo(e));
+		finestra.setResizable(false);
+		finestra.setScene(scena);
+		finestra.show();
+	}
+	//metodo che crea le label con i comandi del gioco e il bottone per iniziare il gioco
+	public void vaiSpiegazione() {
+		principale.getChildren().remove(lTitolo);
+		principale.getChildren().remove(bAvanti);
+		bStart.setVisible(true);
+		lInfo = new Label("Tanto tempo fa in una galassia lontana lontana...\n" 
+				+"\n"
+				+ "Han solo insieme ai suoi compagni stanno trasportando un carico molto prezioso\n"
+				+ "di cristalli kyber ma per un attacco da parte di navi imperiali, il carico è andato perso\n"
+				+ "nelle profondita dello spazio, è ora tuo compito guidare il leggendario millenium falcon\n"
+				+ "al recupero dei 10 cristalli.");
+		principale.getChildren().add(lInfo);
+		lInfo.setTranslateX(0);
+		lInfo.setTranslateY(0);
+		lInfo.setId("Spiegazione");
+		lInfo.getStyleClass().add("pacchettoGioco");
+		spiegazione = new Label(
+				"I comandi del gioco sono:\n" + "\n" + "-Per il movimento a destra usare la freccetta destra."
+						+ "\n"
+						+ "-Per il movimento a sinistra usare la freccetta sinistra.\n"
+						+ "-Per il movimento in alto usare la freccetta rivolta verso l'alto.\n"
+						+ "-Per il movimento in basso usare la freccetta rivolta verso il basso.");
+		principale.getChildren().add(spiegazione);
+		spiegazione.setTranslateX(0);
+		spiegazione.setTranslateY(200);
+		spiegazione.setId("Comandi");
+		spiegazione.getStyleClass().add("pacchettoGioco");
+	}
+	/*metodo che fa iniziare il gioco e rimuove le label della spiegazione dei comandi e da il comando 
+	 inizio, all'AnimatioTimer*/
+	public void iniziaGioco() {
+		principale.getChildren().remove(lInfo);
+		principale.getChildren().remove(bStart);
+		principale.getChildren().remove(spiegazione);
+		navicella = new Nave(principale, 30.0, 200.0);
+		lPunteggio = new Label(" ");
+		principale.getChildren().add(lPunteggio);
+		lPunteggio.setTranslateX(375);
+		lPunteggio.setId("Punteggio");
+		lPunteggio.getStyleClass().add("pacchettoGioco");
+		tempo.start();
+	}
+	/*metodo che permette il movimento dello sfondo, grazie a due immagini attaccate 
+	 che scorrono verso sinistra e arrivate ad un determianto punto si riposizionano
+	 */
+	public void scorriSfondo() {
+		iSfondo.setTranslateX(iSfondo.getTranslateX() - 5);
+		iSfondoScorri.setTranslateX(iSfondoScorri.getTranslateX() - 5);
+		if (iSfondo.getTranslateX() <= -915) {
+			iSfondo.setTranslateX(915);
+		}
+		if (iSfondoScorri.getTranslateX() <= -915) {
+			iSfondoScorri.setTranslateX(915);
+		}
+	}
+	/*metodo che gestisce altri metodi per il movimento dell'astronave creati nel file
+	 *Class Nave, sono controllati tramite l'assegnazione di tasti.
+	 */
+	public void spostaNaveColpo(KeyEvent tasto) {
+		if (tasto.getCode() == KeyCode.UP) {
+			navicella.suGiu(1);
+		}
+		if (tasto.getCode() == KeyCode.DOWN) {
+			navicella.suGiu(-1);
+		}
+		if (tasto.getCode() == KeyCode.RIGHT) {
+			navicella.avantiDietro(1);
+		}
+		if (tasto.getCode() == KeyCode.LEFT) {
+			navicella.avantiDietro(-1);
+		}
+	}
+	//metodo che permette il movimento verso sinistra dei cristalli da raccogliere
+	public void muoviCristalli() {
+		cristallo1.setTranslateX(cristallo1.getTranslateX() + -4.5);
+		cristallo2.setTranslateX(cristallo2.getTranslateX() + -4.5);
+		cristallo3.setTranslateX(cristallo3.getTranslateX() + -4.5);
+	}
+	
+	//metodo che genera cristalli e sfrutta l'AnimationTimer come loop
+	public void creaCristalli() {
+		// if che controlla la creazione dei cristalli tramite la variabile contatore
+		if (contatore < limite) {
+			cristallo1 = new ImageView("pacchettoGioco/kyberBlu.png");
+			cristallo1.setTranslateX(850);
+			cristallo1.setTranslateY(50);
+			cristallo1.setRotate(60);
+			contatore++;
+			principale.getChildren().add(cristallo1);
+			cristallo2 = new ImageView("pacchettoGioco/kyberVerde.png");
+			cristallo2.setTranslateX(850);
+			cristallo2.setTranslateY(250);
+			contatore++;
+			principale.getChildren().add(cristallo2);
+			cristallo3 = new ImageView("pacchettoGioco/kyberRosso.png");
+			cristallo3.setTranslateX(850);
+			cristallo3.setTranslateY(450);
+			cristallo3.setRotate(220);
+			contatore++;
+			principale.getChildren().add(cristallo3);
+		}
+		if (cristallo1.getTranslateX() < -100) {
+			principale.getChildren().remove(cristallo1);
+			contatore--;
+		}
+		if (cristallo2.getTranslateX() < -100) {
+			principale.getChildren().remove(cristallo2);
+			contatore--;
+		}
+		if (cristallo3.getTranslateX() < -100) {
+			principale.getChildren().remove(cristallo3);
+			contatore--;
+		}
+	}
+	/*metodo che gestisce le collisioni e lo fa richiamando dei getters creati nel file Class Nave*/
+	public void collisione() {
+		if (navicella.getNave()[navicella.getI()].getBoundsInParent().intersects(cristallo1.getBoundsInParent())) {
+			
+			/*la riga di codice "cristallo1.setTranslateY(1500);" è stata aggiunta per evitare un aumento anomalo 
+			 del punteggio in quanto i cristalli non erano realmente rimossi.
+			 */
+			cristallo1.setTranslateY(1500);
+			for (int j = 0; j < navicella.getNave().length; j++) {
+				principale.getChildren().remove(cristallo1);
+			}
+			contaPunteggio = contaPunteggio + 1;
+		}
+		if (navicella.getNave()[navicella.getI()].getBoundsInParent().intersects(cristallo2.getBoundsInParent())) {
+			cristallo2.setTranslateY(1500);
+			for (int j = 0; j < navicella.getNave().length; j++) {
+				principale.getChildren().remove(cristallo2);
+			}
+			contaPunteggio = contaPunteggio + 1;
+		}
+		if (navicella.getNave()[navicella.getI()].getBoundsInParent().intersects(cristallo3.getBoundsInParent())) {
+			cristallo3.setTranslateY(1500);
+			for (int j = 0; j < navicella.getNave().length; j++) {
+				principale.getChildren().remove(cristallo3);
+			}
+			contaPunteggio = contaPunteggio + 1;
+		}
+		lPunteggio.setText("I cristalli raccolti sono: " + contaPunteggio);
+	}
+	//metodo che ferma l'AnimationTimer e crea la schermata di fine gioco
+	public void finale() {
+		//if che raggiunto determinato punteggio ferma AnimationTimer e aggiunge schermata e label del finale.
+		if (contaPunteggio == 10) {
+			tempo.stop();
+			principale.getChildren().add(iSfondoFinale);
+			lFine = new Label("Complimenti hai recuperato tutti e " + contaPunteggio + " i cristalli.");
+			principale.getChildren().add(lFine);
+			lFine.setTranslateX(220);
+			lFine.setTranslateY(200);
+			lFine.setId("Fine");
+			lFine.getStyleClass().add("pacchettoGioco");
+		}
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
