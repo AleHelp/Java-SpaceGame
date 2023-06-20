@@ -1,2 +1,1 @@
-# Simple-Game
-Simple game written in java.
+Game written in java.
